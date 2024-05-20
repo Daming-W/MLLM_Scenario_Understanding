@@ -125,7 +125,8 @@ def eval_model(args):
         )
 
     outputs = tokenizer.batch_decode(output_ids, skip_special_tokens=True)[0].strip()
-    print(outputs)
+    print('answer:',outputs)
+    return outputs
 
 
 if __name__ == "__main__":
