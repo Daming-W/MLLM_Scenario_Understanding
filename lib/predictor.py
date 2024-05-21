@@ -67,7 +67,6 @@ def su_inference(args, model_name, tokenizer, model, image_processor, image_file
         "illegal_parking": None,
     }
 
-
     # process image
     image_files = image_parser(args)
     images = load_images(image_files)
@@ -139,14 +138,21 @@ def su_inference(args, model_name, tokenizer, model, image_processor, image_file
                 num_beams=args.num_beams,
                 max_new_tokens=args.max_new_tokens,
                 use_cache=True,
+                # output confidenial score
+                output_scores=True,
             )
+            
+        # logits = output_ids.scores
+        # probabilities = [F.softmax(score, dim=-1) for score in logits]
+        # max_probs = [torch.max(prob).item() for prob in probabilities]
+        # average_confidence = sum(max_probs) / len(max_probs)
+        # print('scores:',logits)
+        # print(average_confidence)
 
         outputs = tokenizer.batch_decode(output_ids, skip_special_tokens=True)[0].strip()
-        # logits = outputs.logits
-        # probabilities = torch.softmax(logits, dim=-1)
-        answer_dict[sce] = outputs
-        # print('answer:',outputs)
 
+        answer_dict[sce] = outputs
+    
     return answer_dict
 
 

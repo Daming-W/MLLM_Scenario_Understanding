@@ -1,7 +1,7 @@
 import os 
 from tqdm import tqdm
 
-class mapper():
+class Mapper():
     def __init__(self,answer_dict):
         self.answer_dict = answer_dict
 
