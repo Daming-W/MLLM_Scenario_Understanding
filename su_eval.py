@@ -5,6 +5,11 @@ import time
 import argparse
 
 import torch
+import datetime
+
+from sklearn.metrics import recall_score, accuracy_score
+import numpy as np
+from tqdm import tqdm
 
 from llava.conversation import conv_templates, SeparatorStyle
 from llava.model.builder import load_pretrained_model
@@ -19,9 +24,10 @@ from lib.mapper import Mapper
 from lib.predictor import su_inference
 from lib.eval_utils import *
 
-from sklearn.metrics import recall_score, accuracy_score
-import numpy as np
-from tqdm import tqdm
+
+def generate_default_json_name():
+    now = datetime.datetime.now()
+    return now.strftime('%m%d_%H%M')
 
 if __name__=='__main__':
 
@@ -31,6 +37,7 @@ if __name__=='__main__':
     # input arg
     parser = argparse.ArgumentParser(description='Run LLaVA model inference.')
     parser.add_argument('--json_file', type=str, required=True, help='Path to the image file')
+    parser.add_argument('--make_json', type=bool, default=False, help='make an output file')
     input_args = parser.parse_args()
     
     # load images
@@ -65,8 +72,10 @@ if __name__=='__main__':
 
     recall,accuracy,latency=[],[],[]
 
-    for sample, gt in tqdm(data_dict.items()):
+    result_dict={}
 
+    for sample, gt in tqdm(data_dict.items()):
+        # update new data sample
         args.image_file=sample
 
         # inference with returning a dict of answer text
@@ -83,13 +92,27 @@ if __name__=='__main__':
 
         # convert bool dict to onehot
         pred=bool2binary(bool_dict)
-        print(pred)
+
+        # record
+        result_dict[sample]={
+            'answer_dict':answer_dict,
+            'bool_dict':bool_dict,
+            'pred':pred,
+            'ground_truth':gt
+        }
 
         # append result
-        recall.append(recall_score(gt, pred))
+        recall.append(su_recall_score(gt, pred))
         accuracy.append(accuracy_score(gt, pred))
     
+    # output a json file
+    if input_args.make_json:
+        json_path = f'./su_data/outputs/{generate_default_json_name()}.json'
+        with open(json_path,'w') as j:
+            json.dump(result_dict,j,indent=4)
+            print(f'\nrecord results -> {json_path} \n')
+
     print(recall,'\n',accuracy,'\n',latency,'\n')
-    print(np.mean(recall),np.mean(accuracy),np.mean(latency))
+    print(f'recall:{np.mean(recall)} accuracy:{np.mean(accuracy)} latency:{np.mean(latency)}')
 
         
