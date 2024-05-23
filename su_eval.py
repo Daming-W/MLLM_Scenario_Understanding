@@ -112,7 +112,6 @@ if __name__=='__main__':
             json.dump(result_dict,j,indent=4)
             print(f'\nrecord results -> {json_path} \n')
 
-    print(recall,'\n',accuracy,'\n',latency,'\n')
-    print(f'recall:{np.mean(recall)} accuracy:{np.mean(accuracy)} latency:{np.mean(latency)}')
+    print(f'recall: {np.mean(recall):.4f} \naccuracy: {np.mean(accuracy):.4f} \nlatency: {np.mean(latency):.4f} sec/img')
 
         
