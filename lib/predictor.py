@@ -2,7 +2,6 @@
 Mostly borrow from llava.eval.run_llava.py
 '''
 
-
 import argparse
 import torch
 

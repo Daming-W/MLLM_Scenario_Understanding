@@ -24,7 +24,6 @@ from lib.mapper import Mapper
 from lib.predictor import su_inference
 from lib.eval_utils import *
 
-
 def generate_default_json_name():
     now = datetime.datetime.now()
     return now.strftime('%m%d_%H%M')
@@ -36,8 +35,23 @@ if __name__=='__main__':
 
     # input arg
     parser = argparse.ArgumentParser(description='Run LLaVA model inference.')
-    parser.add_argument('--json_file', type=str, required=True, help='Path to the image file')
-    parser.add_argument('--make_json', type=bool, default=False, help='make an output file')
+
+    parser.add_argument(
+        '--json_file', type=str, 
+        required=True, 
+        help='Path to the image file'
+        )
+    parser.add_argument(
+        '--prompt_file', type=str, 
+        default='./su_prompts/prompt.json', 
+        help='Prompt file path'
+        )   
+    parser.add_argument(
+        '--make_json', type=bool, 
+        default=False, 
+        help='make an output file'
+        )
+
     input_args = parser.parse_args()
     
     # load images
@@ -66,7 +80,7 @@ if __name__=='__main__':
     print(f'\n ** finish loading model {model_name} ** \n')
     
     # load query prompt
-    with open('/root/LLaVA_SU/su_prompts/prompt.json','r') as f:
+    with open(input_args.prompt_file,'r') as f:
         query_dict=json.load(f)
     print(f'query_dict:\n{query_dict}\n')
 
