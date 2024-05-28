@@ -43,10 +43,10 @@ if __name__=='__main__':
         "conv_mode": None,
         "image_file": input_args.image_file,
         "sep": ",",
-        "temperature": 0.1,
-        "top_p": 0.99,
+        "temperature": 0.2,
+        "top_p": 0.7,
         "num_beams": 1,
-        "max_new_tokens": 32
+        "max_new_tokens": 512
     })()
 
     # pre-trained options
@@ -64,7 +64,7 @@ if __name__=='__main__':
     print(f'\n ** finish loading model {model_name} ** \n')
     
     # load query prompt
-    with open('/root/LLaVA_SU/su_prompts/prompt.json','r') as f:
+    with open('/root/LLaVA_SU/su_prompts/cotprompt.json','r') as f:
         query_dict=json.load(f)
     print(f'query_dict:\n{query_dict}\n')
     
@@ -83,3 +83,7 @@ if __name__=='__main__':
     bool_dict=mapper.answer2bool()
     print(f'bool_dict:\n{bool_dict}\n')
 
+
+# title="LLaVA-Scenario-Understanding",
+# description="Choose a preset image or upload your own image to classify issues --> \
+#     Smoking / Pedestrian step on lawn / On Fire / Trash or Fallen Leaves / Crowded / Illegal parking / Hailing"

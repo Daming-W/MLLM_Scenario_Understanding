@@ -7,7 +7,7 @@ import argparse
 import torch
 import datetime
 
-from sklearn.metrics import recall_score, accuracy_score
+from sklearn.metrics import recall_score, precision_score, accuracy_score
 import numpy as np
 from tqdm import tqdm
 
@@ -82,9 +82,11 @@ if __name__=='__main__':
     # load query prompt
     with open(input_args.prompt_file,'r') as f:
         query_dict=json.load(f)
-    print(f'query_dict:\n{query_dict}\n')
+    print("query dict : ")
+    for i,j in query_dict.items():
+        print(i,'->',j )
 
-    recall,accuracy,latency=[],[],[]
+    recall,precision,accuracy,latency=[],[],[],[]
 
     result_dict={}
 
@@ -104,8 +106,11 @@ if __name__=='__main__':
         mapper=Mapper(answer_dict)
         bool_dict=mapper.answer2bool()
 
+        # merge sub-sce to output dict
+        output_dict=mapper.merge_bool()
+
         # convert bool dict to onehot
-        pred=bool2binary(bool_dict)
+        pred=bool2binary(output_dict)
 
         # record
         result_dict[sample]={
@@ -115,10 +120,6 @@ if __name__=='__main__':
             'ground_truth':gt
         }
 
-        # append result
-        recall.append(su_recall_score(gt, pred))
-        accuracy.append(accuracy_score(gt, pred))
-    
     # output a json file
     if input_args.make_json:
         json_path = f'./su_data/outputs/{generate_default_json_name()}.json'
@@ -126,6 +127,7 @@ if __name__=='__main__':
             json.dump(result_dict,j,indent=4)
             print(f'\nrecord results -> {json_path} \n')
 
-    print(f'recall: {np.mean(recall):.4f} \naccuracy: {np.mean(accuracy):.4f} \nlatency: {np.mean(latency):.4f} sec/img')
+    # evaluate
+    eval_from_json(json_path)
 
         

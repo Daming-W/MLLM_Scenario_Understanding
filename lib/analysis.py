@@ -1,7 +1,7 @@
 import os
 import json
 
-res_json = '/root/LLaVA_SU/su_data/outputs/0524_1346.json'
+res_json = '/root/LLaVA_SU/su_data/outputs/0527_1200.json'
 
 cnt={
     "smoking": 0,
@@ -24,6 +24,7 @@ with open(res_json,'r') as res:
             indice = [i for i, x in enumerate(ground_truth) if x == 1][0]
             if pred[indice]!=1:
                 cnt[list(res_dict["bool_dict"].keys())[indice]] += 1
+                print(img)
         except:
             pass
 print(cnt)
